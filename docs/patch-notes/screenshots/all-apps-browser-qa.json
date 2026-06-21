@@ -1,0 +1,25 @@
+[
+  {
+    "port": 5174,
+    "title": "Base GameBoard",
+    "hasBoard": true
+  },
+  {
+    "port": 5175,
+    "title": "Base GameBoard · Territory",
+    "hasBoard": true
+  },
+  {
+    "port": 5176,
+    "title": "Base GameBoard · Form Finding",
+    "hasBoard": true
+  },
+  {
+    "port": 5177,
+    "title": "Evolutionary Motif Lab",
+    "archiveCount": "2 Pareto / 2 total",
+    "discoveredCount": "240 sampled",
+    "hasBoard": true,
+    "hasMotifOverlay": true
+  }
+]

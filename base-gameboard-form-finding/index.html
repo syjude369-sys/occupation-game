@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base GameBoard · Form Finding</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <main class="appShell">
+      <aside class="settingsPanel">
+        <header class="brand">
+          <h1>Form Finding</h1>
+          <p>Cellular automata rule search</p>
+        </header>
+
+        <section class="controlSection">
+          <h2>Simulation</h2>
+          <label>Grid N <input id="gridSize" type="number" min="4" max="31" value="17"></label>
+          <label>Players <input id="playerCount" type="number" min="2" max="8" value="4"></label>
+          <label>Final turn <input id="turnCount" type="number" min="1" max="200" value="30"></label>
+          <label>Cell cap <input id="cellCap" type="number" min="1" max="400" value="50"></label>
+        </section>
+
+        <section class="controlSection">
+          <h2>Random Search</h2>
+          <label>Candidates <input id="candidateCount" type="number" min="2" max="200" value="16"></label>
+          <label>Seeds / candidate <input id="seedCount" type="number" min="2" max="50" value="6"></label>
+          <label>Master seed <input id="masterSeed" type="number" min="1" max="9999999" value="6152026"></label>
+          <p class="hint">Rook, bishop, knight and attack weights are sampled across the full range.</p>
+        </section>
+
+        <div class="commandRow">
+          <button id="runButton" class="primaryButton" type="button">Run search</button>
+          <button id="stopButton" type="button" disabled>Stop</button>
+        </div>
+        <button id="exportButton" type="button" disabled>Export results JSON</button>
+      </aside>
+
+      <section class="workspace">
+        <header class="workspaceBar">
+          <div>
+            <strong>BASE GAMEBOARD · FORM FINDING</strong>
+            <span id="selectionLabel">Run a search to generate Pareto candidates.</span>
+          </div>
+          <div class="statusBlock">
+            <span id="progressText">IDLE</span>
+            <progress id="searchProgress" max="1" value="0"></progress>
+          </div>
+        </header>
+
+        <div class="boardArea">
+          <svg id="resultBoard" viewBox="0 0 1000 1000" aria-label="Representative final pattern"></svg>
+          <div id="emptyState">No candidate selected</div>
+        </div>
+
+        <footer class="metricBar" id="metricBar">
+          <span>Continuity —</span>
+          <span>Interpenetration —</span>
+          <span>Boundary —</span>
+          <span>Balance —</span>
+          <span>Stability —</span>
+        </footer>
+      </section>
+
+      <aside class="resultsPanel">
+        <header>
+          <h2>Pareto Frontier</h2>
+          <span id="resultSummary">0 candidates</span>
+        </header>
+        <div class="axisLegend">
+          <span>C continuity</span>
+          <span>I interpenetration</span>
+          <span>B boundary</span>
+          <span>E balance</span>
+          <span>S stability</span>
+        </div>
+        <div id="resultList" class="resultList"></div>
+      </aside>
+    </main>
+    <script type="module" src="./form-app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Furniture Layout Lab</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #111;
+  --surface: #1a1a1a;
+  --border: #333;
+  --text: #ddd;
+  --muted: #888;
+  --accent: #4A90D9;
+  --danger: #e05252;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 13px;
+}
+body { background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+/* ── Shared nav (same in both apps) ── */
+nav.appnav { display: flex; align-items: center; gap: 0; padding: 0 12px; border-bottom: 1px solid var(--border); background: #0d0d0d; height: 36px; flex-shrink: 0; }
+nav.appnav .brand { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: #555; text-transform: uppercase; padding-right: 16px; border-right: 1px solid var(--border); margin-right: 4px; }
+nav.appnav a { display: inline-flex; align-items: center; padding: 0 14px; height: 36px; font-size: 12px; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s; }
+nav.appnav a:hover { color: var(--text); }
+nav.appnav a.active { color: var(--text); border-bottom-color: #5DC5A4; }
+nav.appnav .motif-badge { margin-left: auto; font-size: 11px; color: #5DC5A4; background: #1a2e1a; border: 1px solid #3a5a3a; border-radius: 3px; padding: 2px 8px; }
+header.topbar { display: flex; align-items: center; gap: 16px; padding: 6px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+header.topbar h1 { font-size: 14px; font-weight: 600; color: var(--accent); }
+header.topbar span { color: var(--muted); font-size: 12px; }
+.main { display: flex; flex: 1; overflow: hidden; }
+.sidebar { width: 280px; min-width: 280px; border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; gap: 0; }
+.panel { padding: 12px; border-bottom: 1px solid var(--border); }
+.panel h2 { font-size: 11px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; letter-spacing: 0.06em; }
+.preset-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+.preset-row button { background: var(--border); border: none; color: var(--text); padding: 3px 7px; border-radius: 3px; cursor: pointer; font-family: inherit; font-size: 11px; }
+.preset-row button:hover { background: var(--accent); }
+
+/* Grid editor */
+#gridEditor { display: inline-grid; gap: 2px; margin: 6px 0; }
+.gc { width: 26px; height: 26px; border: 1px solid #444; cursor: pointer; border-radius: 2px; transition: background 0.1s; }
+.gc[data-t="O"] { background: #c8d8e8; border-color: #8aa; }
+.gc[data-t="E"] { background: #2a3a2a; border-color: #4a6a4a; }
+.gc[data-t="0"] { background: #1a1a1a; border-color: #333; }
+.tool-row { display: flex; gap: 4px; margin-bottom: 6px; }
+.tool-btn { flex: 1; padding: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; border-radius: 3px; font-family: inherit; font-size: 11px; }
+.tool-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.grid-actions { display: flex; gap: 4px; margin-top: 4px; }
+.grid-actions button { flex: 1; padding: 3px; border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; border-radius: 3px; font-family: inherit; font-size: 11px; }
+.grid-actions button:hover { color: var(--text); border-color: var(--text); }
+
+/* Catalog list */
+.cat-item { display: flex; align-items: center; gap: 6px; padding: 3px 0; border-bottom: 1px solid #222; }
+.cat-item label { flex: 1; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.cat-item .fp { color: var(--muted); font-size: 10px; }
+
+/* Options */
+label.opt { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 3px 0; }
+label.opt span { color: var(--muted); font-size: 11px; }
+label.opt input[type=number] { width: 60px; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 2px 4px; border-radius: 3px; font-family: inherit; font-size: 12px; text-align: right; }
+
+/* Run button */
+#runBtn { width: 100%; padding: 10px; background: var(--accent); border: none; color: #fff; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 4px; }
+#runBtn:hover { background: #357abd; }
+#runBtn:disabled { background: #333; color: var(--muted); cursor: default; }
+#statusLine { font-size: 11px; color: var(--muted); padding: 6px 12px; }
+
+/* Workspace */
+.workspace { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+.tab-row { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--surface); padding: 0 8px; }
+.tab-btn { padding: 8px 14px; border: none; background: none; color: var(--muted); cursor: pointer; font-family: inherit; font-size: 12px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+.layout-view { flex: 1; overflow: auto; padding: 16px; display: none; }
+.layout-view.active { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+.svg-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 12px; }
+.stats-panel { min-width: 200px; }
+.stats-panel h3 { font-size: 11px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.stat-row { display: flex; justify-content: space-between; padding: 3px 0; border-bottom: 1px solid #222; font-size: 12px; }
+.stat-row span:first-child { color: var(--muted); }
+.placement-list { margin-top: 12px; }
+.placement-item { display: flex; gap: 6px; align-items: center; padding: 3px 0; border-bottom: 1px solid #222; font-size: 11px; }
+.apply-layout-btn { margin-top: 10px; width: 100%; padding: 8px; border: 1px solid #5DC5A4; background: #152a22; color: #5DC5A4; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 12px; }
+.apply-layout-btn:hover { background: #1e3a2f; }
+.applied-note { margin-top: 6px; color: #5DC5A4; font-size: 11px; min-height: 14px; }
+.valid-badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; }
+.valid-badge.ok { background: #1e4a1e; color: #5dc55d; }
+.valid-badge.fail { background: #4a1e1e; color: #e05252; }
+.reason-list { margin-top: 6px; }
+.reason-item { font-size: 11px; color: var(--danger); padding: 2px 0; }
+.empty-state { color: var(--muted); padding: 32px; text-align: center; font-size: 13px; }
+</style>
+</head>
+<body>
+<nav class="appnav">
+  <span class="brand">DD3 Codex</span>
+  <a href="./index.html">Pattern Engine</a>
+  <a href="./furniture-lab.html" class="active">Furniture Layout</a>
+  <span class="motif-badge" id="motifBadge" style="display:none"></span>
+</nav>
+<header class="topbar">
+  <h1>Furniture Layout Lab</h1>
+  <span id="topbarSub">Draw a motif or open from Pattern Engine</span>
+</header>
+<div class="main">
+  <aside class="sidebar">
+    <div class="panel">
+      <h2>Motif Editor</h2>
+      <div class="preset-row">
+        <button onclick="applyPreset('3x3')">3×3</button>
+        <button onclick="applyPreset('4x3')">4×3</button>
+        <button onclick="applyPreset('3x4')">3×4</button>
+        <button onclick="applyPreset('4x4')">4×4</button>
+        <button onclick="applyPreset('L')">L</button>
+        <button onclick="applyPreset('T')">T</button>
+        <button onclick="applyPreset('mixed')">OE mix</button>
+      </div>
+      <div class="tool-row">
+        <button class="tool-btn active" id="toolO" onclick="setTool('O')">O</button>
+        <button class="tool-btn" id="toolE" onclick="setTool('E')">E</button>
+        <button class="tool-btn" id="tool0" onclick="setTool('0')">∅</button>
+      </div>
+      <div id="gridEditor"></div>
+      <div class="grid-actions">
+        <button onclick="addRow()">+Row</button>
+        <button onclick="addCol()">+Col</button>
+        <button onclick="removeRow()">-Row</button>
+        <button onclick="removeCol()">-Col</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Catalog</h2>
+      <div id="catalogList"><span style="color:var(--muted);font-size:11px">Loading…</span></div>
+    </div>
+
+    <div class="panel">
+      <h2>Options</h2>
+      <label class="opt"><span>Beam width</span><input type="number" id="beamWidth" value="50" min="1" max="200"></label>
+      <label class="opt"><span>Max layouts</span><input type="number" id="maxLayouts" value="5" min="1" max="10"></label>
+      <label class="opt"><span>Fine grid mm</span><input type="number" id="fineGrid" value="100" min="50" max="500"></label>
+    </div>
+
+    <div class="panel">
+      <button id="runBtn">▶ Run Layout Engine</button>
+      <p id="statusLine">Ready</p>
+    </div>
+  </aside>
+
+  <div class="workspace">
+    <div class="tab-row" id="tabRow">
+      <span style="padding:8px 14px;color:var(--muted);font-size:12px">Run to see results</span>
+    </div>
+    <div id="viewsContainer">
+      <div class="empty-state">Draw a motif → select furniture → Run</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { loadFurnitureCatalog } from './furniture-catalog.js';
+import {
+  generateFurnitureLayouts,
+  normalizeMotifForFurniture,
+  CELL_SIZE_MM,
+} from './furniture-layout-engine.js';
+import { FURNITURE_OVERLAY_KEY, normalizeFurnitureOverlayStore } from './furniture-overlay.js';
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let grid = [];
+let gridW = 3, gridH = 3;
+let currentTool = 'O';
+let catalog = [];
+let enabledIds = new Set();
+let svgOutlines = {};  // sourceBlockName → { paths, bboxMm }
+let activeMotifMeta = null;
+
+const CAT_COLORS = {
+  meeting:   '#4A90D9',
+  work:      '#5CB85C',
+  informal:  '#F0AD4E',
+  storage:   '#9B9B9B',
+  landscape: '#5DC5A4',
+  seating:   '#9B59B6',
+};
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+async function init() {
+  try {
+    const raw = await fetch('./assets/furniture/metadata/furniture-catalog.json').then(r => r.json());
+    catalog = loadFurnitureCatalog(raw);
+    enabledIds = new Set(catalog.map(a => a.id));
+    renderCatalogList();
+  } catch (e) {
+    document.getElementById('catalogList').textContent = 'Failed to load catalog: ' + e.message;
+  }
+  // Load CAD SVG outlines (optional — falls back to rect if missing)
+  try {
+    const outlines = await fetch('./assets/furniture/metadata/furniture-svg-outlines.json').then(r => r.json());
+    for (const [, data] of Object.entries(outlines)) {
+      if (data && !data.error && data.id) svgOutlines[data.id] = data;
+    }
+  } catch (_) { /* silently skip */ }
+
+  // Load motif from URL param (passed from Pattern Engine)
+  const urlMotif = loadMotifFromURL();
+  if (urlMotif) {
+    applyMotifData(urlMotif);
+  } else {
+    applyPreset('3x3');
+  }
+  document.getElementById('runBtn').addEventListener('click', runEngine);
+}
+
+function loadMotifFromURL() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('motif');
+    if (!raw) return null;
+    return JSON.parse(decodeURIComponent(raw));
+  } catch (_) { return null; }
+}
+
+function applyMotifData(motifData) {
+  activeMotifMeta = {
+    id: motifData.id || null,
+    signature: motifData.signature || null,
+    name: motifData.name || motifData.id || 'Motif',
+    archiveCandidateId: motifData.archiveCandidateId || null,
+    width: motifData.width,
+    height: motifData.height,
+    cells: Array.isArray(motifData.cells) ? [...motifData.cells] : [],
+  };
+  gridW = motifData.width;
+  gridH = motifData.height;
+  grid = [];
+  const cellMap = { 0: '0', 1: 'O', 2: 'O', 3: 'E' };
+  for (let y = 0; y < gridH; y++) {
+    const row = [];
+    for (let x = 0; x < gridW; x++) {
+      const v = motifData.cells[y * gridW + x];
+      row.push(cellMap[v] ?? (v === 'O' ? 'O' : v === 'E' ? 'E' : '0'));
+    }
+    grid.push(row);
+  }
+  renderGrid();
+  // Show motif info in header
+  const name = motifData.name || motifData.id || 'Motif';
+  document.getElementById('topbarSub').textContent = name + ' · ' + gridW + '×' + gridH;
+  const badge = document.getElementById('motifBadge');
+  badge.textContent = name;
+  badge.style.display = '';
+}
+
+// ── Grid editor ───────────────────────────────────────────────────────────────
+function initGrid(w, h, fill = 'O') {
+  gridW = w; gridH = h;
+  grid = Array(h).fill(null).map(() => Array(w).fill(fill));
+}
+
+function renderGrid() {
+  const el = document.getElementById('gridEditor');
+  el.style.gridTemplateColumns = `repeat(${gridW}, 26px)`;
+  el.innerHTML = '';
+  for (let y = 0; y < gridH; y++) {
+    for (let x = 0; x < gridW; x++) {
+      const c = document.createElement('div');
+      c.className = 'gc';
+      c.dataset.t = grid[y][x];
+      c.dataset.x = x; c.dataset.y = y;
+      c.addEventListener('mousedown', onCellDown);
+      c.addEventListener('mouseover', onCellOver);
+      el.appendChild(c);
+    }
+  }
+}
+
+let painting = false;
+document.addEventListener('mouseup', () => { painting = false; });
+function onCellDown(e) { painting = true; applyTool(e.target); e.preventDefault(); }
+function onCellOver(e) { if (painting) applyTool(e.target); }
+function applyTool(el) {
+  const x = +el.dataset.x, y = +el.dataset.y;
+  grid[y][x] = currentTool;
+  el.dataset.t = currentTool;
+}
+
+window.setTool = (t) => {
+  currentTool = t;
+  ['O','E','0'].forEach(k => document.getElementById('tool'+k).classList.toggle('active', k === t));
+};
+
+window.addRow = () => { gridH++; grid.push(Array(gridW).fill('0')); renderGrid(); };
+window.addCol = () => { gridW++; grid.forEach(r => r.push('0')); renderGrid(); };
+window.removeRow = () => { if (gridH > 1) { gridH--; grid.pop(); renderGrid(); } };
+window.removeCol = () => { if (gridW > 1) { gridW--; grid.forEach(r => r.pop()); renderGrid(); } };
+
+window.applyPreset = (name) => {
+  const O = 'O', E = 'E', _ = '0';
+  const presets = {
+    '3x3':  { w:3, h:3, cells: [[O,O,O],[O,O,O],[O,O,O]] },
+    '4x3':  { w:4, h:3, cells: [[O,O,O,O],[O,O,O,O],[O,O,O,O]] },
+    '3x4':  { w:3, h:4, cells: [[O,O,O],[O,O,O],[O,O,O],[O,O,O]] },
+    '4x4':  { w:4, h:4, cells: [[O,O,O,O],[O,O,O,O],[O,O,O,O],[O,O,O,O]] },
+    'L':    { w:3, h:3, cells: [[O,_,_],[O,_,_],[O,O,O]] },
+    'T':    { w:3, h:3, cells: [[O,O,O],[_,O,_],[_,O,_]] },
+    'mixed':{ w:3, h:3, cells: [[O,O,E],[O,O,E],[O,O,O]] },
+  };
+  const p = presets[name]; if (!p) return;
+  gridW = p.w; gridH = p.h;
+  grid = p.cells.map(r => [...r]);
+  activeMotifMeta = null;
+  renderGrid();
+};
+
+// ── Catalog list ──────────────────────────────────────────────────────────────
+function renderCatalogList() {
+  const el = document.getElementById('catalogList');
+  el.innerHTML = '';
+  for (const a of catalog) {
+    const row = document.createElement('div');
+    row.className = 'cat-item';
+    const color = CAT_COLORS[a.category] ?? '#888';
+    row.innerHTML = `
+      <label>
+        <input type="checkbox" ${enabledIds.has(a.id) ? 'checked' : ''} data-id="${a.id}">
+        <span class="cat-dot" style="background:${color}"></span>
+        ${a.id}
+      </label>
+      <span class="fp">${a.footprintMm.width}×${a.footprintMm.depth}</span>`;
+    row.querySelector('input').addEventListener('change', e => {
+      if (e.target.checked) enabledIds.add(a.id);
+      else enabledIds.delete(a.id);
+    });
+    el.appendChild(row);
+  }
+}
+
+// ── Engine run ────────────────────────────────────────────────────────────────
+function runEngine() {
+  const btn = document.getElementById('runBtn');
+  const status = document.getElementById('statusLine');
+  btn.disabled = true;
+  status.textContent = 'Running…';
+
+  setTimeout(() => {
+    try {
+      const motif = {
+        id: 'lab_motif',
+        width: gridW, height: gridH,
+        cells: grid.flat(),
+        cellSizeMm: CELL_SIZE_MM,
+        accessibleEdges: [],
+      };
+
+      const activeCatalog = catalog.filter(a => enabledIds.has(a.id));
+      const opts = {
+        beamWidth:          +document.getElementById('beamWidth').value,
+        maxReturnedLayouts: +document.getElementById('maxLayouts').value,
+        fineGridMm:         +document.getElementById('fineGrid').value,
+      };
+
+      const t0 = performance.now();
+      const result = generateFurnitureLayouts(motif, activeCatalog, opts);
+      const ms = (performance.now() - t0).toFixed(0);
+
+      status.textContent = `Done in ${ms}ms — ${result.layouts.length} layout(s) — status: ${result.status}`;
+      renderResults(result, motif);
+    } catch (e) {
+      status.textContent = 'Error: ' + e.message;
+      console.error(e);
+    }
+    btn.disabled = false;
+  }, 10);
+}
+
+// ── Render results ────────────────────────────────────────────────────────────
+function renderResults(result, motif) {
+  const tabRow = document.getElementById('tabRow');
+  const container = document.getElementById('viewsContainer');
+  tabRow.innerHTML = '';
+  container.innerHTML = '';
+
+  if (result.layouts.length === 0) {
+    container.innerHTML = `<div class="empty-state">
+      <p style="margin-bottom:8px">No layouts found (${result.status})</p>
+      ${result.failureReasons.map(r => `<p style="color:var(--danger);font-size:12px">${r}</p>`).join('')}
+    </div>`;
+    return;
+  }
+
+  result.layouts.forEach((layout, i) => {
+    const tab = document.createElement('button');
+    tab.className = 'tab-btn' + (i === 0 ? ' active' : '');
+    tab.textContent = layout.label ?? `Layout ${i+1}`;
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.layout-view').forEach(v => v.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('view-' + i).classList.add('active');
+    });
+    tabRow.appendChild(tab);
+
+    const view = document.createElement('div');
+    view.className = 'layout-view' + (i === 0 ? ' active' : '');
+    view.id = 'view-' + i;
+
+    const svgStr = buildLayoutSVG(layout, motif);
+    const statsStr = buildStats(layout);
+
+    view.innerHTML = `
+      <div class="svg-wrap">${svgStr}</div>
+      <div class="stats-panel">${statsStr}</div>`;
+    const statsPanel = view.querySelector('.stats-panel');
+    const applyBtn = document.createElement('button');
+    applyBtn.className = 'apply-layout-btn';
+    applyBtn.textContent = 'Apply to Pattern Board';
+    applyBtn.addEventListener('click', () => applyLayoutToPatternBoard(layout, motif, i, view));
+    const note = document.createElement('div');
+    note.className = 'applied-note';
+    note.id = `applied-note-${i}`;
+    statsPanel.append(applyBtn, note);
+    container.appendChild(view);
+  });
+}
+
+function applyLayoutToPatternBoard(layout, motif, index, view) {
+  const meta = activeMotifMeta || {
+    id: motif.id || null,
+    signature: null,
+    name: motif.id || 'Manual motif',
+    width: motif.width,
+    height: motif.height,
+    cells: [...motif.cells],
+  };
+  const store = normalizeFurnitureOverlayStore(localStorage.getItem(FURNITURE_OVERLAY_KEY));
+  const key = meta.id || meta.signature || `manual-${meta.width}x${meta.height}`;
+  store.items[key] = {
+    motifId: meta.id,
+    signature: meta.signature,
+    name: meta.name,
+    archiveCandidateId: meta.archiveCandidateId || null,
+    width: meta.width,
+    height: meta.height,
+    cells: meta.cells,
+    layoutId: layout.layoutId || `layout-${index + 1}`,
+    layoutLabel: layout.label || `Layout ${index + 1}`,
+    layout: {
+      layoutId: layout.layoutId || `layout-${index + 1}`,
+      label: layout.label || `Layout ${index + 1}`,
+      valid: !!layout.valid,
+      capacity: layout.capacity ?? 0,
+      placements: layout.placements.map((p) => {
+        const asset = catalog.find((item) => item.id === p.assetId);
+        return {
+          assetId: p.assetId,
+          xMm: p.xMm,
+          yMm: p.yMm,
+          rotation: p.rotation || 0,
+          mirrored: !!p.mirrored,
+          widthMm: asset?.footprintMm?.width ?? CELL_SIZE_MM,
+          depthMm: asset?.footprintMm?.depth ?? CELL_SIZE_MM,
+          category: asset?.category || 'work',
+          name: asset?.name || p.assetId,
+          paths: svgOutlines[p.assetId]?.paths || [],
+        };
+      })
+    },
+    updatedAt: new Date().toISOString(),
+  };
+  localStorage.setItem(FURNITURE_OVERLAY_KEY, JSON.stringify(store));
+  const note = view.querySelector('.applied-note');
+  if (note) note.textContent = `Applied: ${store.items[key].layoutLabel}`;
+  document.getElementById('statusLine').textContent = `Applied ${store.items[key].layoutLabel} to Pattern Engine overlay`;
+}
+
+function buildLayoutSVG(layout, motif) {
+  const CS = CELL_SIZE_MM;
+  const PX = 44; // pixels per cell
+  const PAD = 16;
+  const scale = PX / CS;
+  const W = motif.width * PX + PAD * 2;
+  const H = motif.height * PX + PAD * 2;
+
+  const cells = motif.cells;
+  let rects = '';
+
+  // Draw cells
+  for (let cy = 0; cy < motif.height; cy++) {
+    for (let cx = 0; cx < motif.width; cx++) {
+      const t = cells[cy * motif.width + cx];
+      let fill = 'none', stroke = '#333';
+      if (t === 'O' || t === 1 || t === 2) { fill = '#2a3a4a'; stroke = '#4a6a8a'; }
+      else if (t === 'E' || t === 3) { fill = '#1e2e1e'; stroke = '#3a5a3a'; }
+      rects += `<rect x="${PAD + cx*PX}" y="${PAD + cy*PX}" width="${PX}" height="${PX}" fill="${fill}" stroke="${stroke}" stroke-width="1"/>`;
+    }
+  }
+
+  // Draw clearance zones (subtle)
+  for (const p of layout.placements) {
+    const asset = catalog.find(a => a.id === p.assetId);
+    if (!asset) continue;
+    const dim = getDim(asset.footprintMm, p.rotation);
+    for (const zone of asset.clearanceZones ?? []) {
+      const cRect = getClearanceRect(p, zone, asset.footprintMm, p.rotation);
+      if (!cRect) continue;
+      const x = PAD + cRect.x * scale;
+      const y = PAD + cRect.y * scale;
+      const w = cRect.width * scale;
+      const h = cRect.height * scale;
+      rects += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="rgba(255,220,100,0.07)" stroke="rgba(255,220,100,0.25)" stroke-width="0.5" stroke-dasharray="3,2"/>`;
+    }
+  }
+
+  // Draw placements
+  for (const p of layout.placements) {
+    const asset = catalog.find(a => a.id === p.assetId);
+    const color = CAT_COLORS[asset?.category ?? 'work'] ?? '#888';
+    const fp = asset?.footprintMm ?? { width: CS, depth: CS };
+    const dim = getDim(fp, p.rotation);
+    const x = PAD + p.xMm * scale;
+    const y = PAD + p.yMm * scale;
+    const ew = dim.width * scale;   // effective width in px
+    const ed = dim.depth * scale;   // effective depth in px
+    const fw = fp.width * scale;    // original footprint width in px
+    const fd = fp.depth * scale;    // original footprint depth in px
+    const outline = svgOutlines[p.assetId];
+
+    if (outline && outline.paths && outline.paths.length) {
+      // CAD outline rendering
+      // Transform pipeline (SVG applies right-to-left):
+      //   scale(fw,fd)         → paths [0,1]^2 → footprint mm space
+      //   translate(0,1) scale(1,-1)  → flip Y (Rhino Y-up → SVG Y-down)
+      //   translate(-fw/2,-fd/2)      → center at origin
+      //   rotate(rotation)            → apply rotation
+      //   translate(ew/2,ed/2)        → shift to effective center
+      //   translate(x,y)              → place in canvas
+      const mirrorPart = p.mirrored ? 'translate(1,0) scale(-1,1) ' : '';
+      const tf = `translate(${x},${y}) translate(${ew/2},${ed/2}) rotate(${p.rotation}) translate(${-fw/2},${-fd/2}) scale(${fw},${fd}) translate(0,1) scale(1,-1) ${mirrorPart}`;
+
+      // Clip to effective bounding box
+      const clipId = `clip_${p.assetId}_${p.xMm}_${p.yMm}`;
+      rects += `<defs><clipPath id="${clipId}"><rect x="${x}" y="${y}" width="${ew}" height="${ed}"/></clipPath></defs>`;
+      rects += `<rect x="${x}" y="${y}" width="${ew}" height="${ed}" fill="${color}22" stroke="${color}" stroke-width="1" rx="2"/>`;
+      rects += `<g clip-path="url(#${clipId})" transform="${tf}">`;
+      for (const path of outline.paths) {
+        rects += `<path d="${path}" fill="none" stroke="${color}" stroke-width="${1/Math.max(fw,fd)}"/>`;
+      }
+      rects += `</g>`;
+      // Label
+      const label = p.assetId.replace(/_/g,' ');
+      rects += `<text x="${x+ew/2}" y="${y+ed-4}" text-anchor="middle" fill="${color}" font-size="7" font-family="monospace" opacity="0.8">${label}</text>`;
+    } else {
+      // Fallback: colored rectangle
+      const label = p.assetId.replace(/_/g,' ');
+      const fontSize = Math.min(10, ew / label.length * 1.5);
+      rects += `<rect x="${x}" y="${y}" width="${ew}" height="${ed}" fill="${color}55" stroke="${color}" stroke-width="1.5" rx="2"/>`;
+      rects += `<text x="${x+ew/2}" y="${y+ed/2}" text-anchor="middle" dominant-baseline="middle" fill="${color}" font-size="${fontSize}" font-family="monospace">${label}</text>`;
+    }
+    if (p.rotation !== 0) {
+      rects += `<text x="${x+ew-2}" y="${y+9}" text-anchor="end" fill="${color}88" font-size="7" font-family="monospace">${p.rotation}°</text>`;
+    }
+  }
+
+  // Grid lines
+  for (let i = 0; i <= motif.width; i++) {
+    rects += `<line x1="${PAD + i*PX}" y1="${PAD}" x2="${PAD + i*PX}" y2="${PAD + motif.height*PX}" stroke="#333" stroke-width="0.5"/>`;
+  }
+  for (let j = 0; j <= motif.height; j++) {
+    rects += `<line x1="${PAD}" y1="${PAD + j*PX}" x2="${PAD + motif.width*PX}" y2="${PAD + j*PX}" stroke="#333" stroke-width="0.5"/>`;
+  }
+
+  return `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">${rects}</svg>`;
+}
+
+function getDim(fp, rot) {
+  if (rot === 90 || rot === 270) return { width: fp.depth, depth: fp.width };
+  return { width: fp.width, depth: fp.depth };
+}
+
+const ACCESS_MAP = {
+  0:   { front: 'S', back: 'N', left: 'W', right: 'E' },
+  90:  { front: 'W', back: 'E', left: 'S', right: 'N' },
+  180: { front: 'N', back: 'S', left: 'E', right: 'W' },
+  270: { front: 'E', back: 'W', left: 'N', right: 'S' },
+};
+function getClearanceRect(p, zone, fp, rot) {
+  const dir = ACCESS_MAP[rot]?.[zone.side] ?? zone.side;
+  const dim = getDim(fp, rot);
+  const d = zone.distanceMm;
+  const {xMm: x, yMm: y} = p;
+  const {width: w, depth: h} = dim;
+  switch(dir) {
+    case 'S': return { x, y: y+h, width: w, height: d };
+    case 'N': return { x, y: y-d, width: w, height: d };
+    case 'E': return { x: x+w, y, width: d, height: h };
+    case 'W': return { x: x-d, y, width: d, height: h };
+    default: return null;
+  }
+}
+
+function buildStats(layout) {
+  const validBadge = `<span class="valid-badge ${layout.valid ? 'ok' : 'fail'}">${layout.valid ? 'VALID' : 'INVALID'}</span>`;
+  const seq = (layout.primarySizeSequence ?? []).map(v => v.toFixed?.(2) ?? v).join(', ');
+  let html = `
+    <h3>Stats ${validBadge}</h3>
+    <div class="stat-row"><span>Capacity</span><span>${layout.capacity}</span></div>
+    <div class="stat-row"><span>Diversity</span><span>${layout.diversityScore} categories</span></div>
+    <div class="stat-row"><span>Size sequence</span><span>[${seq}]</span></div>
+    <div class="stat-row"><span>Occupied ratio</span><span>${(layout.occupiedAreaRatio*100).toFixed(1)}%</span></div>
+    <div class="stat-row"><span>Opening score</span><span>${(layout.openingSpaceScore*100).toFixed(1)}%</span></div>
+    <div class="stat-row"><span>Path quality</span><span>${(layout.pathQualityScore*100).toFixed(1)}%</span></div>
+    <div class="stat-row"><span>Placements</span><span>${layout.placements.length}</span></div>`;
+
+  if (layout.failureReasons?.length) {
+    html += `<div class="reason-list">`;
+    for (const r of layout.failureReasons) {
+      html += `<div class="reason-item">⚠ ${r}</div>`;
+    }
+    html += `</div>`;
+  }
+
+  html += `<div class="placement-list">`;
+  for (const p of layout.placements) {
+    const asset = catalog.find(a => a.id === p.assetId);
+    const color = CAT_COLORS[asset?.category ?? 'work'] ?? '#888';
+    html += `<div class="placement-item">
+      <span class="cat-dot" style="background:${color}"></span>
+      <span>${p.assetId}</span>
+      <span style="color:var(--muted)">(${p.xMm/1000}m, ${p.yMm/1000}m) r${p.rotation}</span>
+    </div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+init();
+</script>
+</body>
+</html>

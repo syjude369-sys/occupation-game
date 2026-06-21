@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pattern Engine Lab</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./overlay.css">
+</head>
+<body>
+  <nav class="appnav">
+    <span class="brand">DD3 Codex</span>
+    <a href="./index.html" class="active">Pattern Engine</a>
+    <a href="./furniture-lab.html">Furniture Layout</a>
+  </nav>
+  <main class="app">
+    <aside class="sidebar">
+      <header class="brand">
+        <h1>Pattern Engine</h1>
+        <p>Checkpoint pattern discovery</p>
+      </header>
+
+      <section class="panel">
+        <h2>Board</h2>
+        <label>Grid N <input id="sizeInput" type="number" min="4" max="31"></label>
+        <label>Players <input id="playersInput" type="number" min="2" max="8"></label>
+        <label>Turns <input id="turnsInput" type="number" min="1" max="200"></label>
+        <label>Cell cap <input id="capInput" type="number" min="1" max="400"></label>
+        <p id="occupancyWarning" class="warning" hidden></p>
+      </section>
+
+      <section class="panel">
+        <h2>Evolution</h2>
+        <label>Generation size <input id="generationSizeInput" type="number" min="2" max="100"></label>
+        <label>Seeds / candidate <input id="seedsInput" type="number" min="2" max="30"></label>
+        <label>Master seed <input id="masterSeedInput" type="number" min="1" max="99999999"></label>
+        <div class="buttonGrid">
+          <button id="runGenerationBtn" class="primary">Run generation</button>
+          <button id="stopBtn" disabled>Stop</button>
+        </div>
+        <div class="progressLine"><progress id="progress" max="1" value="0"></progress><span id="progressLabel">IDLE</span></div>
+      </section>
+
+      <section class="panel">
+        <h2>Discovery</h2>
+        <label>Interval turns <input id="patternIntervalInput" type="number" min="1" max="50"></label>
+        <label>Min occupancy <input id="minOccupancyInput" type="number" min="0" max="1" step="0.05"></label>
+        <label>Max occupancy <input id="maxOccupancyInput" type="number" min="0" max="1" step="0.05"></label>
+        <label>Max region area <input id="maxRegionAreaInput" type="number" min="4" max="400"></label>
+        <div class="toggleList">
+          <label><input id="slidingDiscoveryInput" type="checkbox"> Sliding Window Discovery</label>
+          <label><input id="regionDiscoveryInput" type="checkbox"> Region-Based Discovery</label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Pattern Fitness</h2>
+        <label>Recurrence <input id="recurrenceWeightInput" type="number" min="0" max="5" step="0.05"></label>
+        <p class="hint">How often the same motif episode appears across checkpoints, seeds, and genomes.</p>
+        <label>Distinctiveness <input id="distinctivenessWeightInput" type="number" min="0" max="5" step="0.05"></label>
+        <p class="hint">How clearly the motif reads as a coherent bounded pattern against its surroundings.</p>
+        <label>Symmetry <input id="symmetryWeightInput" type="number" min="0" max="5" step="0.05"></label>
+        <p class="hint">Rewards rotation/reflection order and balanced geometric regularity.</p>
+        <label>Void structure <input id="voidWeightInput" type="number" min="0" max="5" step="0.05"></label>
+        <p class="hint">Rewards useful internal empty-cell structure for later circulation, planting, or furniture checks.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Objectives</h2>
+        <div id="objectiveControls" class="toggleList"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Project Data</h2>
+        <div class="buttonGrid">
+          <button id="exportBtn">Export JSON</button>
+          <button id="importBtn">Import JSON</button>
+        </div>
+        <button id="resetBtn" class="danger">Reset saved data</button>
+        <input id="importFile" type="file" accept="application/json" hidden>
+        <p id="saveStatus" class="saveStatus">Auto-save ready</p>
+      </section>
+    </aside>
+
+    <section class="workspace">
+      <header class="toolbar">
+        <div><strong>BASE GAMEBOARD PATTERN ENGINE</strong><span id="generationLabel">Generation 0</span></div>
+        <label class="overlayToggle"><input id="motifOverlayInput" type="checkbox" checked> Motif overlay</label>
+        <label class="overlayToggle"><input id="patternOverlayInput" type="checkbox" checked> Pattern overlay</label>
+        <div class="candidateMeta" id="candidateMeta">Select or generate a candidate.</div>
+      </header>
+      <div class="boardWrap">
+        <svg id="boardSvg" viewBox="0 0 1000 1000"></svg>
+        <div id="emptyBoard">No candidate selected</div>
+      </div>
+      <footer id="metricStrip" class="metricStrip"></footer>
+    </section>
+
+    <aside class="library">
+      <nav class="tabs">
+        <button data-tab="archive" class="active">Archive</button>
+        <button data-tab="motifs">Motifs</button>
+        <button data-tab="discovered">Discovered</button>
+      </nav>
+      <section id="archiveView" class="view active">
+        <header class="viewHeader"><h2>Pareto Archive</h2><span id="archiveCount"></span></header>
+        <div id="archiveList"></div>
+      </section>
+      <section id="motifsView" class="view">
+        <header class="viewHeader"><h2>Motif Library</h2><span>Promoted discoveries</span></header>
+        <div id="motifList"></div>
+      </section>
+      <section id="discoveredView" class="view">
+        <header class="viewHeader"><h2>Discovered Patterns</h2><span id="discoveredCount"></span></header>
+        <div id="discoveredList"></div>
+      </section>
+    </aside>
+  </main>
+
+  <dialog id="motifDialog" hidden>
+    <form method="dialog" class="editor">
+      <header><h2>Motif Editor</h2><button value="cancel" aria-label="Close">×</button></header>
+      <div class="editorBody">
+        <div>
+          <div class="toolRow" id="editorTools">
+            <button type="button" data-tool="1" class="active">Required</button>
+            <button type="button" data-tool="2">Optional</button>
+            <button type="button" data-tool="3">Empty</button>
+            <button type="button" data-tool="0">Ignore</button>
+          </div>
+          <div id="editorGrid" class="editorGrid"></div>
+          <div class="gridActions">
+            <button id="addRowBtn" type="button">+ Row</button>
+            <button id="addColBtn" type="button">+ Column</button>
+            <button id="clearGridBtn" type="button">Clear</button>
+          </div>
+        </div>
+        <div class="editorFields">
+          <label>Name <input id="motifNameInput" type="text" maxlength="80"></label>
+          <label>Description <textarea id="motifDescriptionInput" rows="4"></textarea></label>
+          <label>Weight <input id="motifWeightInput" type="number" min="-100" max="100"></label>
+          <label>Minimum completion <input id="motifCompletionInput" type="number" min="0" max="1" step="0.05"></label>
+          <label class="check"><input id="motifEnabledInput" type="checkbox"> Enabled</label>
+        </div>
+      </div>
+      <footer><button value="cancel">Cancel</button><button id="saveMotifBtn" type="button" class="primary">Save motif</button></footer>
+    </form>
+  </dialog>
+  <script type="module" src="./lab-app.js"></script>
+</body>
+</html>

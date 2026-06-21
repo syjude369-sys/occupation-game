@@ -1,0 +1,236 @@
+[
+  {
+    "_comment": "=== CONFERENCE / BOARDROOM ===",
+    "id": "conference_10",
+    "name": "10-seat Boardroom Table",
+    "category": "meeting",
+    "subtype": "conference",
+    "capacity": 10,
+    "footprintMm": { "width": 4500, "depth": 6000 },
+    "allowedRotations": [0, 90],
+    "clearanceZones": [
+      { "side": "front", "distanceMm": 1200 },
+      { "side": "back", "distanceMm": 1200 }
+    ],
+    "requiredAccessEdges": [],
+    "wallRequirement": null,
+    "preferredLocation": null,
+    "compatibleSets": ["conference"],
+    "tags": ["meeting", "conference", "boardroom", "large"],
+    "sourceBlockName": "A$C5A2323A3",
+    "handbookReference": "CAD import — 294-object block. bbox 4762×2587mm. Scaled to MH Fig 30.15-D 10-person room = 4500×6000mm (3×4 cells)."
+  },
+  {
+    "id": "meeting_table_06",
+    "name": "6-seat Meeting Table",
+    "category": "meeting",
+    "subtype": "formal",
+    "capacity": 6,
+    "footprintMm": { "width": 3000, "depth": 4500 },
+    "allowedRotations": [0, 90],
+    "clearanceZones": [
+      { "side": "front", "distanceMm": 1200 },
+      { "side": "back", "distanceMm": 1200 }
+    ],
+    "requiredAccessEdges": [],
+    "wallRequirement": null,
+    "preferredLocation": null,
+    "compatibleSets": ["conference"],
+    "tags": ["meeting", "conference"],
+    "sourceBlockName": "A$C77CC511A",
+    "handbookReference": "CAD import — 33-object block. bbox 2182×1800mm. Scaled to MH Fig 30.15-B 6-person room = 3000×4500mm (2×3 cells)."
+  },
+  {
+    "_comment": "=== FOCUS PODS ===",
+    "id": "focus_pod_2p",
+    "name": "2-Person Focus Pod",
+    "category": "work",
+    "subtype": "focus_pod",
+    "capacity": 2,
+    "footprintMm": { "width": 1500, "depth": 3000 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [
+      { "side": "back", "distanceMm": 1500 }
+    ],
+    "requiredAccessEdges": ["back"],
+    "wallRequirement": null,
+    "preferredLocation": "perimeter",
+    "compatibleSets": ["focus_cluster"],
+    "tags": ["work", "focus", "enclosed", "quiet"],
+    "sourceBlockName": "2P-F306",
+    "handbookReference": "CAD import — block 2P-F306, 34-object block. bbox 1800×2400mm. Scaled to MH focus room = 1500×3000mm (1×2 cells). REVIEW: capacity (2P prefix may = 2-person); verify door side = front."
+  },
+  {
+    "id": "focus_pod_1p",
+    "name": "1-Person Focus Pod",
+    "category": "work",
+    "subtype": "focus_pod",
+    "capacity": 1,
+    "footprintMm": { "width": 1500, "depth": 3000 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [
+      { "side": "back", "distanceMm": 1500 }
+    ],
+    "requiredAccessEdges": ["back"],
+    "wallRequirement": null,
+    "preferredLocation": "perimeter",
+    "compatibleSets": ["focus_cluster"],
+    "tags": ["work", "focus", "enclosed", "quiet", "solo"],
+    "sourceBlockName": "2P-F301",
+    "handbookReference": "CAD import — block 2P-F301, 28-object block. bbox 1080×2400mm. Scaled to MH focus room = 1500×3000mm (1×2 cells). Narrower variant → same grid cell as 2P-F306. REVIEW: capacity; door-side orientation."
+  },
+  {
+    "_comment": "=== LANDSCAPE ===",
+    "id": "plant_indoor_large",
+    "name": "Indoor Plant (Large)",
+    "category": "landscape",
+    "subtype": "plant",
+    "capacity": 0,
+    "footprintMm": { "width": 1500, "depth": 1500 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [
+      { "side": "front", "distanceMm": 600 },
+      { "side": "back", "distanceMm": 600 }
+    ],
+    "requiredAccessEdges": [],
+    "wallRequirement": null,
+    "preferredLocation": null,
+    "compatibleSets": [],
+    "tags": ["landscape", "plant", "biophilic"],
+    "sourceBlockName": "A$C17B74DF3",
+    "handbookReference": "CAD import — 126-object block. bbox 1421×1440mm → snapped to 1×1 cell (1500×1500mm). Visual: radial branch symbol = plan-view plant/tree symbol (식재). NOT a round table."
+  },
+  {
+    "_comment": "=== INFORMAL / LOUNGE ===",
+    "id": "lounge_sofa_group",
+    "name": "Lounge Sofa Group",
+    "category": "informal",
+    "subtype": "lounge",
+    "capacity": 3,
+    "footprintMm": { "width": 3000, "depth": 1500 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [
+      { "side": "front", "distanceMm": 600 }
+    ],
+    "requiredAccessEdges": ["front"],
+    "wallRequirement": null,
+    "preferredLocation": null,
+    "compatibleSets": [],
+    "tags": ["informal", "lounge", "sofa"],
+    "sourceBlockName": "A$C22E003D4",
+    "handbookReference": "CAD import — 101-object block. bbox 2127×1710mm. Snapped to 2×1 cells (3000×1500mm). Visual: arch-profile = sofa/lounge in plan. REVIEW: capacity (likely 2–3 seats); confirm coffee table in bbox."
+  },
+  {
+    "_comment": "=== WORK SURFACES ===",
+    "id": "workstation_single",
+    "name": "Single Workstation",
+    "category": "work",
+    "subtype": "workstation",
+    "capacity": 1,
+    "footprintMm": { "width": 1500, "depth": 900 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [
+      { "side": "front", "distanceMm": 900 }
+    ],
+    "requiredAccessEdges": ["front"],
+    "wallRequirement": null,
+    "preferredLocation": null,
+    "compatibleSets": ["workstation_row"],
+    "tags": ["work", "desk", "solo"],
+    "sourceBlockName": "A$C1C1C35F3",
+    "handbookReference": "CAD import — 2-object block (simple outline). bbox 1500×900mm. Classic 1500×900mm workstation footprint. REVIEW: verify back wall or freestanding."
+  },
+  {
+    "id": "office_cubicle",
+    "name": "Office Cubicle",
+    "category": "work",
+    "subtype": "cubicle",
+    "capacity": 1,
+    "footprintMm": { "width": 1500, "depth": 1500 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [
+      { "side": "front", "distanceMm": 1500 }
+    ],
+    "requiredAccessEdges": ["front"],
+    "wallRequirement": null,
+    "preferredLocation": "perimeter",
+    "compatibleSets": [],
+    "tags": ["work", "reception", "service"],
+    "sourceBlockName": "A$C50441F07",
+    "handbookReference": "CAD import — 15-object block. bbox 1800×1950mm. Snapped to 1×1 cell (1500×1500mm). Visual: cross-hatched surface + monitor symbol. REVIEW: may be small meeting table or L-desk; confirm type and scale manually."
+  },
+  {
+    "_comment": "=== SEATING ===",
+    "id": "plant_indoor_small",
+    "name": "Indoor Plant (Small)",
+    "category": "landscape",
+    "subtype": "plant",
+    "capacity": 0,
+    "footprintMm": { "width": 360, "depth": 350 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [],
+    "requiredAccessEdges": [],
+    "wallRequirement": null,
+    "preferredLocation": null,
+    "compatibleSets": [],
+    "tags": ["landscape", "plant", "biophilic"],
+    "sourceBlockName": "A$C2D4412C3",
+    "handbookReference": "CAD import — 9-object block. bbox 360×348mm. Visual: small radial symbol = small potted plant (식재). 재분류: task_chair → plant_indoor_small."
+  },
+  {
+    "id": "stool_side",
+    "name": "Side Stool",
+    "category": "seating",
+    "subtype": "stool",
+    "capacity": 1,
+    "footprintMm": { "width": 450, "depth": 450 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [],
+    "requiredAccessEdges": [],
+    "wallRequirement": null,
+    "preferredLocation": null,
+    "compatibleSets": [],
+    "tags": ["seating", "stool", "flexible"],
+    "sourceBlockName": "A$C488251E3",
+    "handbookReference": "CAD import — 3-object block (simple). bbox 450×450mm. Visual: small square = stool or side table. REVIEW: confirm seating vs. side table."
+  },
+  {
+    "_comment": "=== STORAGE ===",
+    "id": "credenza_150",
+    "name": "Credenza / Lateral Filing (1500mm)",
+    "category": "storage",
+    "subtype": "credenza",
+    "capacity": 0,
+    "footprintMm": { "width": 1500, "depth": 450 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [
+      { "side": "front", "distanceMm": 1100 }
+    ],
+    "requiredAccessEdges": ["front"],
+    "wallRequirement": "back",
+    "preferredLocation": "perimeter",
+    "compatibleSets": [],
+    "tags": ["storage", "filing", "credenza"],
+    "sourceBlockName": "A$C28953115",
+    "handbookReference": "CAD import — 3-object block (simple). bbox 1500×450mm. Visual: thin horizontal rectangle with hatch lines = filing cabinet or credenza. Depth 450mm typical for lateral filing."
+  },
+  {
+    "id": "wall_storage_180",
+    "name": "Wall Storage Unit (1800mm)",
+    "category": "storage",
+    "subtype": "wall_unit",
+    "capacity": 0,
+    "footprintMm": { "width": 1800, "depth": 330 },
+    "allowedRotations": [0, 90, 180, 270],
+    "clearanceZones": [
+      { "side": "front", "distanceMm": 900 }
+    ],
+    "requiredAccessEdges": ["front"],
+    "wallRequirement": "back",
+    "preferredLocation": "perimeter",
+    "compatibleSets": [],
+    "tags": ["storage", "shelving", "wall"],
+    "sourceBlockName": "2P-W307",
+    "handbookReference": "CAD import — block 2P-W307, 20-object block. bbox 1800×330mm. Depth 330mm = shallow wall-mounted bookcase or display shelf. REVIEW: confirm shelf depth; W prefix may = Wall unit."
+  }
+]

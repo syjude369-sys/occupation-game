@@ -1,0 +1,39 @@
+.toolbar {
+  gap: 12px;
+}
+
+.overlayToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 9px;
+  color: var(--ink);
+}
+
+.patternOverlayCell {
+  fill: #ff619229;
+  stroke: #ff2f7f;
+  stroke-width: 2;
+  pointer-events: none;
+}
+
+.motifOverlayCell {
+  fill: #ffd84d1f;
+  stroke: #d99a00;
+  stroke-width: 2;
+  stroke-dasharray: 5 3;
+  pointer-events: none;
+}
+
+.patternOverlayLabel {
+  font-size: 14px;
+  font-weight: 800;
+  fill: #ff2f7f;
+  stroke: #fff;
+  stroke-width: 3;
+  paint-order: stroke;
+  dominant-baseline: middle;
+  text-anchor: middle;
+  pointer-events: none;
+}

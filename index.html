@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GameBoard Generator Web</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div>
+            <h1>GameBoard Generator</h1>
+            <p>Grasshopper Python logic, browser preview</p>
+          </div>
+          <span>v1.0</span>
+        </div>
+
+        <section class="control-group">
+          <h2>01. Base & Site</h2>
+          <div id="baseControls" class="control-stack"></div>
+        </section>
+
+        <section class="control-group">
+          <h2>02. Module / Structure</h2>
+          <div id="moduleControls" class="control-stack"></div>
+        </section>
+
+        <section class="control-group">
+          <h2>03. Facade Louver</h2>
+          <div id="facadeControls" class="control-stack"></div>
+        </section>
+
+        <section class="control-group">
+          <h2>04. Elevator / Pivot</h2>
+          <div id="elevControls" class="control-stack"></div>
+        </section>
+
+        <section class="control-group">
+          <h2>05. Display</h2>
+          <div id="displayControls" class="control-stack"></div>
+        </section>
+
+        <button class="danger" id="resetBtn">Reset All</button>
+      </aside>
+
+      <section class="canvas-panel">
+        <header class="toolbar">
+          <div class="tab active">PLAN</div>
+          <div class="tab">2.5D DATA</div>
+          <div class="legend" id="legend"></div>
+        </header>
+        <div class="viewport">
+          <svg id="boardSvg" role="img" aria-label="Generated game board plan"></svg>
+        </div>
+        <footer class="statusbar">
+          <span id="cursorReadout">Ready.</span>
+          <span id="scaleReadout">mm</span>
+        </footer>
+      </section>
+
+      <aside class="inspector">
+        <section class="metric-card validity">
+          <h2>Validity</h2>
+          <div class="valid-row">
+            <strong id="validText">VALID</strong>
+            <span id="fitnessText">0</span>
+          </div>
+        </section>
+
+        <section class="metric-card">
+          <h2>Metrics</h2>
+          <dl id="metricsList"></dl>
+        </section>
+
+        <section class="metric-card">
+          <h2>Counts</h2>
+          <dl id="countsList"></dl>
+        </section>
+
+        <section class="metric-card log-card">
+          <h2>Log</h2>
+          <pre id="logOutput"></pre>
+        </section>
+
+        <section class="metric-card">
+          <h2>Export</h2>
+          <div class="export-grid">
+            <button id="exportJsonBtn">Export JSON</button>
+            <button id="exportSvgBtn">Export SVG</button>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
