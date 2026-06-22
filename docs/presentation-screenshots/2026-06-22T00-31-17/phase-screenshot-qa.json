@@ -1,0 +1,41 @@
+[
+  {
+    "phase": "base",
+    "title": "Base GameBoard",
+    "board": true
+  },
+  {
+    "phase": "territory",
+    "title": "Base GameBoard · Territory",
+    "board": true
+  },
+  {
+    "phase": "form",
+    "title": "Base GameBoard · Form Finding",
+    "boardCells": 0
+  },
+  {
+    "phase": "motif",
+    "title": "Evolutionary Motif Lab",
+    "archive": "4 Pareto / 4 total",
+    "discovered": "300 sampled"
+  },
+  {
+    "phase": "pattern",
+    "title": "Pattern Engine Lab",
+    "archive": "4 Pareto / 4 total",
+    "discovered": "300 sampled"
+  },
+  {
+    "phase": "simulation",
+    "title": "Pattern Engine Lab",
+    "archive": "3 Pareto / 6 total",
+    "discovered": "300 sampled"
+  },
+  {
+    "phase": "furniture",
+    "title": "Furniture Layout Lab",
+    "layouts": 5,
+    "buttons": 5
+  }
+]

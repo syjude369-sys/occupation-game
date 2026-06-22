@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pattern Engine Interface Guide</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    body{min-width:0;background:#f7f7f7}
+    .guide{height:calc(100vh - 36px);overflow:auto}
+    .guideHero{padding:28px 34px 20px;border-bottom:1px solid #111;background:#fff}
+    .guideHero h1{margin:0 0 8px;font-size:28px;letter-spacing:0}
+    .guideHero p{max-width:760px;margin:0;color:#555;font-size:13px;line-height:1.6}
+    .guideGrid{display:grid;grid-template-columns:minmax(320px,430px) minmax(0,1fr);gap:0;min-height:calc(100vh - 148px)}
+    .guideRail{border-right:1px solid #111;background:#fbf6fb;padding:18px}
+    .guidePanel{border:1px solid #cab9ca;background:#fff;margin-bottom:12px}
+    .guidePanel h2{margin:0;padding:8px 10px;background:#f5dff5;border-bottom:1px solid #cab9ca;font-size:11px;text-transform:uppercase}
+    .guidePanel dl{margin:0}
+    .guidePanel div{display:grid;grid-template-columns:128px 1fr;gap:10px;padding:8px 10px;border-bottom:1px solid #eadfea}
+    .guidePanel div:last-child{border-bottom:0}
+    .guidePanel dt{font-size:10px;font-weight:700}
+    .guidePanel dd{margin:0;color:#555;font-size:10px;line-height:1.45}
+    .guideMain{padding:22px 30px 40px;background:#fff}
+    .section{max-width:940px;margin-bottom:28px}
+    .section h2{margin:0 0 10px;font-size:18px}
+    .section p{margin:0 0 12px;color:#555;font-size:12px;line-height:1.65}
+    .flow{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:8px}
+    .step{border:1px solid #bbb;background:#f8f8f8;padding:10px;min-height:96px}
+    .step strong{display:block;margin-bottom:6px;font-size:11px}
+    .step span{display:block;color:#555;font-size:10px;line-height:1.45}
+    .callout{border-left:4px solid #ff6192;background:#fff0f5;padding:11px 13px;color:#5d1730;font-size:11px;line-height:1.55}
+    .legend{display:grid;grid-template-columns:repeat(3,minmax(160px,1fr));gap:8px}
+    .legendItem{border:1px solid #ccc;padding:10px;background:#fafafa}
+    .legendItem b{display:block;margin-bottom:4px;font-size:11px}
+    .legendItem span{font-size:10px;color:#555;line-height:1.45}
+    .swatch{display:inline-block;width:12px;height:12px;border:1px solid #777;margin-right:6px;vertical-align:-2px}
+    .swatch.pink{background:#ff6192}.swatch.cyan{background:#00a9f4}.swatch.black{background:#111}.swatch.purple{background:#7d5cff}
+    @media(max-width:1000px){.guideGrid{grid-template-columns:1fr}.guideRail{border-right:0;border-bottom:1px solid #111}.flow,.legend{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+  <nav class="appnav">
+    <span class="brand">DD3 Lab</span>
+    <a href="./index.html">Pattern Engine</a>
+    <a href="./furniture-lab.html">Furniture Layout</a>
+    <a href="./interface-guide.html" class="active">Interface Guide</a>
+  </nav>
+
+  <main class="guide">
+    <header class="guideHero">
+      <h1>Pattern Engine Interface Guide</h1>
+      <p>이 페이지는 Pattern Engine의 오른쪽/왼쪽 제어 패널과 archive, motif, furniture overlay 흐름을 발표용으로 설명하기 위한 요약 문서입니다.</p>
+    </header>
+
+    <div class="guideGrid">
+      <aside class="guideRail">
+        <section class="guidePanel">
+          <h2>Discovery</h2>
+          <dl>
+            <div><dt>Interval turns</dt><dd>시뮬레이션 몇 턴마다 패턴 후보를 판독할지 정합니다.</dd></div>
+            <div><dt>Min occupied cells</dt><dd>패턴으로 인정할 최소 점유 칸 수입니다. 현재 기본값은 3칸입니다.</dd></div>
+            <div><dt>Min occupancy</dt><dd>패턴 내부 칸 중 점유된 칸의 최소 비율입니다. 1/3 미만이면 버립니다.</dd></div>
+            <div><dt>Max occupancy</dt><dd>너무 꽉 찬 패턴을 거를 때 쓰는 최대 점유 비율입니다.</dd></div>
+            <div><dt>Max region area</dt><dd>region-based discovery가 검사할 최대 영역 크기입니다.</dd></div>
+            <div><dt>Sliding Window</dt><dd>고정 크기 창으로 보드를 훑으며 반복되는 국소 패턴을 찾습니다.</dd></div>
+            <div><dt>Region-Based</dt><dd>연결된 점유 영역을 기준으로 패턴 후보를 추출합니다.</dd></div>
+          </dl>
+        </section>
+
+        <section class="guidePanel">
+          <h2>Pattern Fitness</h2>
+          <dl>
+            <div><dt>Recurrence</dt><dd>여러 test, seed, turn에서 반복해서 등장하는 정도입니다.</dd></div>
+            <div><dt>Distinctiveness</dt><dd>다른 흔한 형태와 구분되는 고유성입니다.</dd></div>
+            <div><dt>Symmetry</dt><dd>회전/반사 구조가 갖는 질서도입니다.</dd></div>
+            <div><dt>Void structure</dt><dd>패턴 안의 빈 공간이 연결성, 출입 가능성, 내부성 측면에서 갖는 점수입니다.</dd></div>
+          </dl>
+        </section>
+
+        <section class="guidePanel">
+          <h2>Objectives</h2>
+          <dl>
+            <div><dt>Continuity</dt><dd>각 플레이어 영역이 하나의 덩어리로 유지되는 정도입니다.</dd></div>
+            <div><dt>Interpenetration</dt><dd>서로 다른 영역이 얼마나 얽혀 있는지 봅니다.</dd></div>
+            <div><dt>Boundary</dt><dd>서로 다른 점유 영역 사이의 접촉 경계량입니다.</dd></div>
+            <div><dt>Balance</dt><dd>플레이어별 점유량 균형입니다.</dd></div>
+            <div><dt>Stability</dt><dd>반복 실행에서 유사한 최종 형태가 나오는 정도입니다.</dd></div>
+            <div><dt>Active motif</dt><dd>등록한 motif fitness를 켠 뒤에만 최적화 목적에 포함됩니다.</dd></div>
+          </dl>
+        </section>
+
+        <section class="guidePanel">
+          <h2>Project Data</h2>
+          <dl>
+            <div><dt>Export JSON</dt><dd>현재 archive, motifs, discovery 설정을 파일로 저장합니다.</dd></div>
+            <div><dt>Import JSON</dt><dd>저장한 프로젝트 상태를 다시 불러옵니다.</dd></div>
+            <div><dt>Reset saved data</dt><dd>브라우저 localStorage에 저장된 현재 프로젝트를 초기화합니다.</dd></div>
+          </dl>
+        </section>
+      </aside>
+
+      <section class="guideMain">
+        <section class="section">
+          <h2>기본 Workflow</h2>
+          <div class="flow">
+            <div class="step"><strong>1. Initial pattern search</strong><span>motif fitness가 꺼진 상태에서 무작위 시뮬레이션을 돌려 pattern 후보를 수집합니다.</span></div>
+            <div class="step"><strong>2. Promote motif</strong><span>Discovered 목록에서 의미 있는 패턴을 motif로 등록합니다.</span></div>
+            <div class="step"><strong>3. Run generation</strong><span>motif fitness를 활성화한 뒤, 등록된 motif가 더 잘 유지되도록 generation을 돌립니다.</span></div>
+            <div class="step"><strong>4. Furniture overlay</strong><span>motif를 Furniture Lab으로 보내 layout을 선택하면 보드 위 실제 발생 위치에 도면기호가 표시됩니다.</span></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Archive와 Replay</h2>
+          <p>Archive는 각 candidate run의 결과를 보관합니다. 카드의 `View`는 보드 상태를 표시하고, `Replay`는 turn 0부터 마지막 turn까지 발전 과정을 재생합니다. Replay bar의 `Save video`를 누르면 `.webm` 파일이 브라우저 다운로드 폴더에 저장됩니다.</p>
+          <div class="callout">Motif hits는 단순 등장 횟수가 아니라, 최소 3턴 이상 존속한 motif episode를 기준으로 집계합니다.</div>
+        </section>
+
+        <section class="section">
+          <h2>Motif Overlay</h2>
+          <p>Motif overlay는 preview 위치가 아니라 현재 보드에서 실제로 발견된 occurrence 위에 표시됩니다. overlay 체크가 켜져 있으면 motif marking과 furniture layout marking이 함께 유지됩니다.</p>
+          <div class="legend">
+            <div class="legendItem"><b><span class="swatch pink"></span>Furniture symbol</b><span>Furniture Lab에서 선택한 layout입니다. 보드 위 motif 발생 위치에 CAD 도면기호로 표시됩니다.</span></div>
+            <div class="legendItem"><b><span class="swatch cyan"></span>Player area</b><span>각 플레이어가 점유한 셀입니다. 색상은 플레이어 index를 나타냅니다.</span></div>
+            <div class="legendItem"><b><span class="swatch black"></span>Occupied group</b><span>시뮬레이션 규칙에 따라 확장된 점유 영역입니다.</span></div>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Furniture Lab 연결</h2>
+          <p>Motif 카드의 `→ Furniture` 버튼은 해당 motif의 크기, cell 구조, archive source를 Furniture Lab URL로 전달합니다. Furniture Lab에서 layout을 생성하고 `Apply to Pattern Board`를 누르면 선택된 layout이 별도 localStorage layer에 저장됩니다. Pattern Engine은 이 저장값을 읽어 motif id 또는 signature가 맞는 경우에만 overlay를 그립니다.</p>
+        </section>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
